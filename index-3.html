@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Social Media Jahreseinteilung | Leben Influencen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --bg:#0a0a0f;
+      --surface:#14141c;
+      --surface-2:#1c1c27;
+      --line:#2a2a3a;
+      --text:#f5f5fa;
+      --muted:#9d9db5;
+      --cyan:#4fd8e8;
+      --violet:#7b6cff;
+      --lilac:#c7a6ff;
+      --danger:#ff6b8a;
+      --grad:linear-gradient(90deg,var(--cyan) 0%,var(--violet) 55%,var(--lilac) 100%);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{overflow-y:scroll}
+    body{font-family:'Poppins','Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
+    a{color:var(--cyan);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* ── Header ── */
+    .hero{position:relative;overflow:hidden;padding:56px 20px 44px;text-align:center;border-bottom:1px solid var(--line)}
+    .hero::before{content:"";position:absolute;inset:-40% -10% auto -10%;height:120%;
+      background:radial-gradient(ellipse at 20% 40%,rgba(79,216,232,.16),transparent 55%),
+                 radial-gradient(ellipse at 80% 30%,rgba(199,166,255,.16),transparent 55%);pointer-events:none}
+    .hero-logo{height:64px;margin:0 auto 22px;display:block;position:relative}
+    .hero-kicker{position:relative;display:inline-block;font-size:12px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
+      color:var(--lilac);border:1.5px solid rgba(199,166,255,.45);border-radius:999px;padding:5px 16px;margin-bottom:16px}
+    .hero-title{position:relative;font-size:clamp(28px,6vw,52px);font-weight:900;line-height:1.05;letter-spacing:-.5px;text-transform:uppercase}
+    .hero-title .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .hero-sub{position:relative;margin-top:14px;color:var(--muted);font-size:15px}
+    .hero-sub strong{color:var(--text)}
+
+    /* ── Top bar ── */
+    .topbar{position:sticky;top:0;z-index:20;background:rgba(10,10,15,.88);backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--line);padding:10px 20px;display:flex;justify-content:flex-end}
+    .admin-btn{padding:7px 14px;border-radius:8px;border:1.5px solid var(--line);background:transparent;color:var(--muted);
+      font:700 12px/1 inherit;font-family:inherit;cursor:pointer;transition:all .2s}
+    .admin-btn:hover{border-color:var(--lilac);color:var(--text)}
+    .admin-btn.active{background:var(--violet);border-color:var(--violet);color:#fff}
+
+    .loading-bar{height:3px;background:var(--grad);width:0;position:fixed;top:0;left:0;z-index:999;transition:width .3s}
+    .loading-bar.show{width:70%}
+    .loading-bar.done{width:100%;opacity:0;transition:width .2s,opacity .4s .2s}
+
+    /* ── Content ── */
+    .container{max-width:1080px;margin:0 auto;padding:36px 16px 64px}
+    .intro{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between;margin-bottom:22px}
+    .intro h2{font-size:22px;font-weight:800}
+    .intro p{color:var(--muted);font-size:14px;margin-top:4px;max-width:560px}
+    .counter{font-size:13px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 14px;white-space:nowrap}
+    .counter strong{color:var(--text)}
+
+    .error-banner{display:none;background:rgba(255,107,138,.1);border:1.5px solid rgba(255,107,138,.4);color:var(--danger);
+      border-radius:12px;padding:12px 16px;font-size:13px;margin-bottom:18px}
+    .error-banner.show{display:block}
+
+    .admin-panel{display:none;background:rgba(123,108,255,.08);border:1.5px solid rgba(123,108,255,.4);border-radius:14px;
+      padding:14px 18px;margin-bottom:20px;font-size:13px;color:var(--muted)}
+    .admin-panel.show{display:block}
+    .admin-panel strong{color:var(--lilac);letter-spacing:1px;text-transform:uppercase;font-size:12px;display:block;margin-bottom:2px}
+
+    /* ── Table ── */
+    .table-wrap{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+    table{width:100%;border-collapse:collapse}
+    thead th{text-align:left;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);
+      padding:14px 16px;background:var(--surface-2);border-bottom:1px solid var(--line)}
+    tbody td{padding:14px 16px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:middle}
+    tbody tr:last-child td{border-bottom:none}
+    tbody tr.free:hover{background:rgba(79,216,232,.04)}
+    .month{font-weight:800;font-size:15px;white-space:nowrap}
+    .month small{display:block;font-weight:500;font-size:11px;color:var(--muted)}
+    tr.booked .month{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .free-cell{color:var(--muted);font-style:italic;font-size:13px}
+    .book-btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:999px;padding:9px 18px;cursor:pointer;
+      font:700 13px/1 inherit;font-family:inherit;color:#0a0a0f;background:var(--grad);transition:transform .15s,filter .15s;white-space:nowrap}
+    .book-btn:hover{transform:translateY(-1px);filter:brightness(1.08)}
+    .del-btn{display:none;margin-left:10px;padding:5px 10px;border-radius:7px;border:1.5px solid rgba(255,107,138,.5);
+      background:transparent;color:var(--danger);font:700 11px/1 inherit;font-family:inherit;cursor:pointer}
+    .admin-mode .del-btn{display:inline-block}
+    .inst{font-weight:700}
+    .skeleton{height:18px;border-radius:6px;background:linear-gradient(90deg,var(--surface-2) 25%,var(--line) 50%,var(--surface-2) 75%);
+      background-size:200% 100%;animation:shimmer 1.4s infinite}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+    /* ── Footer ── */
+    .footer{border-top:1px solid var(--line);padding:30px 20px;text-align:center;color:var(--muted);font-size:13px;line-height:1.9}
+    .footer strong{color:var(--text)}
+
+    /* ── Modals ── */
+    .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(5px);z-index:100;
+      align-items:flex-start;justify-content:center;padding:20px 16px;overflow-y:auto}
+    .overlay.show{display:flex}
+    .modal{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:28px 26px;width:520px;max-width:100%;margin:auto;
+      box-shadow:0 24px 64px rgba(0,0,0,.5)}
+    .modal-kicker{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:4px}
+    .modal-title{font-size:20px;font-weight:800}
+    .modal-hint{font-size:13px;color:var(--muted);margin-top:6px}
+    .field{margin-top:14px}
+    .field label{display:block;font-size:11px;font-weight:700;letter-spacing:.8px;color:var(--muted);margin-bottom:5px}
+    .field input{width:100%;padding:11px 13px;border-radius:10px;background:var(--bg);border:1.5px solid var(--line);color:var(--text);
+      font-size:14px;font-family:inherit;outline:none;transition:border-color .2s}
+    .field input:focus{border-color:var(--violet)}
+    .field-error{font-size:12px;color:var(--danger);margin-top:10px;display:none}
+    .field-error.show{display:block}
+    .modal-actions{display:flex;gap:10px;margin-top:22px}
+    .btn-sec{flex:1;padding:11px;border-radius:10px;background:transparent;border:1.5px solid var(--line);color:var(--muted);
+      font:600 13px/1 inherit;font-family:inherit;cursor:pointer}
+    .btn-sec:hover{color:var(--text);border-color:var(--muted)}
+    .btn-pri{flex:2;padding:11px;border-radius:10px;border:none;color:#0a0a0f;background:var(--grad);font:700 13px/1 inherit;font-family:inherit;cursor:pointer}
+    .btn-pri:disabled{background:var(--line);color:var(--muted);cursor:default}
+    .btn-danger{flex:1;padding:11px;border-radius:10px;border:none;background:var(--danger);color:#fff;font:700 13px/1 inherit;font-family:inherit;cursor:pointer}
+    .center{text-align:center}
+    .big-icon{font-size:42px;margin-bottom:10px}
+    .note{margin-top:14px;border-radius:10px;padding:10px 14px;font-size:12px;background:rgba(79,216,232,.08);border:1px solid rgba(79,216,232,.35);color:var(--cyan)}
+    .note.warn{background:rgba(255,107,138,.08);border-color:rgba(255,107,138,.4);color:var(--danger)}
+
+    .global-loader{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(5px);z-index:500;align-items:center;justify-content:center}
+    .global-loader.show{display:flex}
+    .loader-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:34px 30px;text-align:center;width:290px;max-width:90vw}
+    .spinner{width:52px;height:52px;margin:0 auto 18px;border-radius:50%;border:5px solid var(--line);border-top-color:var(--cyan);border-right-color:var(--lilac);animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loader-title{font-weight:800}
+    .loader-sub{font-size:13px;color:var(--muted);margin-top:4px}
+
+    /* ── Mobile: rows become cards ── */
+    @media (max-width:760px){
+      thead{display:none}
+      table,tbody,tr,td{display:block;width:100%}
+      tbody tr{padding:14px 16px;border-bottom:1px solid var(--line)}
+      tbody tr:last-child{border-bottom:none}
+      tbody td{border:none;padding:3px 0}
+      tbody td[data-label]:not(.month-cell)::before{content:attr(data-label);display:block;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+      .month-cell{margin-bottom:6px}
+      tr.free td.empty{display:none}
+      tr.free td.action{padding-top:8px}
+      tr.free td.action::before{display:none !important}
+      .hero-logo{height:48px}
+    }
+  </style>
+</head>
+<body>
+
+<div class="loading-bar" id="loading-bar"></div>
+
+<header class="hero">
+  <img class="hero-logo" src="https://leben-influencen.ch/wp-content/themes/curaviva/img/Kampagnen-Logo.png" alt="Leben Influencen" onerror="this.style.display='none'"/>
+  <div class="hero-kicker">@leben_influencen</div>
+  <h1 class="hero-title">Social Media<br><span class="grad">Jahreseinteilung <span id="year-label"></span></span></h1>
+  <p class="hero-sub">Eine Initiative von <strong>Curaviva Thurgau</strong> &amp; <strong>Spitex Verband Thurgau</strong></p>
+</header>
+
+<div class="topbar">
+  <button class="admin-btn" id="admin-btn" onclick="toggleAdmin()">🔒 Admin</button>
+</div>
+
+<main class="container">
+  <div class="error-banner" id="error-banner">⚠️ Verbindung zum Server fehlgeschlagen. Bitte laden Sie die Seite neu.</div>
+  <div class="admin-panel" id="admin-panel"><strong>Admin-Modus aktiv</strong>Mit «Löschen» geben Sie einen Monat wieder frei.</div>
+
+  <div class="intro">
+    <div>
+      <h2>Wählen Sie Ihren Monat</h2>
+      <p>Pro Monat kann sich genau eine Institution eintragen. Bitte geben Sie die Ansprechperson an, die in Ihrer Institution für Social Media zuständig ist.</p>
+    </div>
+    <div class="counter" id="counter">– von 12 Monaten vergeben</div>
+  </div>
+
+  <div class="table-wrap" id="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Monat</th>
+          <th>Institution</th>
+          <th>Ansprechperson Social Media</th>
+          <th>Telefon</th>
+          <th>E-Mail</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</main>
+
+<footer class="footer">
+  <strong>Curaviva Thurgau</strong><br>
+  <a href="mailto:pex@curaviva-tg.ch">pex@curaviva-tg.ch</a> · Tel. 071 622 05 27<br>
+  <a href="https://leben-influencen.ch" target="_blank" rel="noopener">leben-influencen.ch</a>
+</footer>
+
+<!-- Buchung -->
+<div class="overlay" id="book-overlay">
+  <div class="modal">
+    <div class="modal-kicker">Social Media Jahreseinteilung</div>
+    <div class="modal-title" id="book-title"></div>
+    <div class="modal-hint">Alle Felder sind Pflichtfelder.</div>
+
+    <div class="field"><label for="f-inst">NAME DER INSTITUTION</label>
+      <input id="f-inst" type="text" maxlength="120" autocomplete="organization" oninput="chk()"/></div>
+    <div class="field"><label for="f-name">VOR- UND NACHNAME DER ANSPRECHPERSON FÜR SOCIAL MEDIA</label>
+      <input id="f-name" type="text" maxlength="100" autocomplete="name" placeholder="Vorname Nachname" oninput="chk()"/></div>
+    <div class="field"><label for="f-tel">TELEFONNUMMER DER ANSPRECHPERSON</label>
+      <input id="f-tel" type="tel" maxlength="40" autocomplete="tel" placeholder="+41 79 123 45 67" oninput="chk()"/></div>
+    <div class="field"><label for="f-email">E-MAIL-ADRESSE DER ANSPRECHPERSON</label>
+      <input id="f-email" type="email" maxlength="120" autocomplete="email" placeholder="name@institution.ch" oninput="chk()"/></div>
+
+    <div class="field-error" id="book-error"></div>
+    <div class="modal-actions">
+      <button class="btn-sec" onclick="closeOverlay('book-overlay')">Abbrechen</button>
+      <button class="btn-pri" id="btn-book" disabled onclick="doBook()">Verbindlich eintragen →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Erfolg -->
+<div class="overlay" id="success-overlay">
+  <div class="modal center">
+    <div class="big-icon">✅</div>
+    <div class="modal-title">Eintrag erfolgreich</div>
+    <p class="modal-hint" id="success-info"></p>
+    <div class="note" id="success-note"></div>
+    <div class="modal-actions"><button class="btn-pri" onclick="closeOverlay('success-overlay')">Schliessen</button></div>
+  </div>
+</div>
+
+<!-- Admin-Login -->
+<div class="overlay" id="login-overlay">
+  <div class="modal center" style="max-width:360px">
+    <div class="big-icon">🔐</div>
+    <div class="modal-title">Admin-Zugang</div>
+    <div class="field"><input type="password" id="login-pw" placeholder="Passwort" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <div class="field-error" id="login-error">Falsches Passwort.</div>
+    <div class="modal-actions"><button class="btn-pri" onclick="doLogin()">Anmelden</button></div>
+  </div>
+</div>
+
+<!-- Löschen -->
+<div class="overlay" id="delete-overlay">
+  <div class="modal center" style="max-width:400px">
+    <div class="big-icon">🗑️</div>
+    <div class="modal-title">Eintrag löschen?</div>
+    <p class="modal-hint" id="delete-info"></p>
+    <div class="modal-actions">
+      <button class="btn-sec" onclick="closeOverlay('delete-overlay')">Abbrechen</button>
+      <button class="btn-danger" onclick="confirmDelete()">Ja, löschen</button>
+    </div>
+  </div>
+</div>
+
+<div class="global-loader" id="global-loader">
+  <div class="loader-card">
+    <div class="spinner"></div>
+    <div class="loader-title" id="loader-title">Bitte warten…</div>
+    <div class="loader-sub" id="loader-sub"></div>
+  </div>
+</div>
+
+<script>
+/* ===== KONFIGURATION ===== */
+// URL der Apps-Script-Web-App (nach dem Bereitstellen hier einfügen)
+const API  = "https://script.google.com/macros/s/AKfycbz9lmLwJ5TNdVG8n2-gBG24pI9sLcpWnt19hLw06GBpatIX5-KqdDZXl5PGESPYOfbnvw/exec";
+// Jahr der Einteilung
+const YEAR = 2027;
+/* ========================= */
+
+const MONTHS = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+let data = {};          // { "1": {inst,name,tel,email}, ... }
+let isAdmin = false, adminPw = "", pMonth = null, delMonth = null;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function setLoading(on){
+  const b=$("loading-bar");
+  if(on) b.className="loading-bar show";
+  else { b.className="loading-bar done"; setTimeout(()=>b.className="loading-bar",600); }
+}
+function showLoader(t,s){ $("loader-title").textContent=t; $("loader-sub").textContent=s||""; $("global-loader").classList.add("show"); }
+function hideLoader(){ $("global-loader").classList.remove("show"); }
+function closeOverlay(id){ $(id).classList.remove("show"); }
+
+async function api(payload){
+  // text/plain vermeidet den CORS-Preflight bei Apps Script
+  const r = await fetch(API, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify(payload) });
+  return r.json();
+}
+
+async function loadData(){
+  setLoading(true);
+  renderSkeleton();
+  try{
+    const r = await fetch(API + "?action=getAll&year=" + YEAR + "&t=" + Date.now());
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error);
+    data = j.data || {};
+    $("error-banner").classList.remove("show");
+  }catch(e){
+    console.warn(e);
+    $("error-banner").classList.add("show");
+  }
+  setLoading(false);
+  render();
+}
+
+function renderSkeleton(){
+  $("tbody").innerHTML = MONTHS.map(m =>
+    `<tr><td class="month">${m}</td><td colspan="4"><div class="skeleton"></div></td></tr>`).join("");
+}
+
+function render(){
+  $("table-wrap").classList.toggle("admin-mode", isAdmin);
+  let booked = 0;
+  $("tbody").innerHTML = MONTHS.map((m,i) => {
+    const n = i+1, b = data[n];
+    if(b){
+      booked++;
+      return `<tr class="booked">
+        <td class="month-cell" data-label="Monat"><span class="month">${m}</span></td>
+        <td data-label="Institution"><span class="inst">${esc(b.inst)}</span>
+          <button class="del-btn" onclick="askDelete(${n})">🗑 Löschen</button></td>
+        <td data-label="Ansprechperson Social Media">${esc(b.name)}</td>
+        <td data-label="Telefon"><a href="tel:${esc(String(b.tel).replace(/\s/g,""))}">${esc(b.tel)}</a></td>
+        <td data-label="E-Mail"><a href="mailto:${esc(b.email)}">${esc(b.email)}</a></td>
+      </tr>`;
+    }
+    return `<tr class="free">
+      <td class="month-cell" data-label="Monat"><span class="month">${m}</span></td>
+      <td class="action" data-label="Institution"><button class="book-btn" onclick="openBook(${n})">+ Monat übernehmen</button></td>
+      <td class="empty free-cell">noch frei</td><td class="empty"></td><td class="empty"></td>
+    </tr>`;
+  }).join("");
+  $("counter").innerHTML = `<strong>${booked}</strong> von 12 Monaten vergeben`;
+}
+
+/* ── Buchung ── */
+function openBook(n){
+  pMonth = n;
+  $("book-title").textContent = MONTHS[n-1] + " " + YEAR;
+  ["f-inst","f-name","f-tel","f-email"].forEach(id => $(id).value = "");
+  $("book-error").classList.remove("show");
+  $("btn-book").disabled = true;
+  $("book-overlay").classList.add("show");
+  setTimeout(()=>$("f-inst").focus(), 50);
+}
+function emailOk(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); }
+function chk(){
+  const v = id => $(id).value.trim();
+  $("btn-book").disabled = !(v("f-inst") && v("f-name") && v("f-tel") && emailOk(v("f-email")));
+}
+async function doBook(){
+  const d = { inst:$("f-inst").value.trim(), name:$("f-name").value.trim(), tel:$("f-tel").value.trim(), email:$("f-email").value.trim() };
+  $("btn-book").disabled = true;
+  showLoader("Eintrag wird gespeichert…","Bitte Fenster nicht schliessen");
+  let res;
+  try{ res = await api({ action:"book", year:YEAR, month:pMonth, ...d }); }
+  catch(e){ res = { ok:false, error:"Verbindung zum Server fehlgeschlagen." }; }
+  hideLoader();
+  if(!res.ok){
+    $("book-error").textContent = "⚠️ " + (res.error || "Eintrag konnte nicht gespeichert werden.");
+    $("book-error").classList.add("show");
+    chk();
+    if(res.taken) loadData();
+    return;
+  }
+  closeOverlay("book-overlay");
+  $("success-info").innerHTML = `<strong>${esc(d.inst)}</strong> ist eingetragen für <strong>${MONTHS[pMonth-1]} ${YEAR}</strong>.`;
+  const note = $("success-note");
+  note.className = "note" + (res.mailSent ? "" : " warn");
+  note.innerHTML = res.mailSent
+    ? `📧 Bestätigung gesendet an <strong>${esc(d.email)}</strong> und pex@curaviva-tg.ch`
+    : "⚠️ Eintrag gespeichert – die Bestätigungs-E-Mail konnte nicht versendet werden.";
+  $("success-overlay").classList.add("show");
+  loadData();
+}
+
+/* ── Admin ── */
+function toggleAdmin(){
+  if(isAdmin){
+    isAdmin=false; adminPw="";
+    $("admin-btn").className="admin-btn"; $("admin-btn").textContent="🔒 Admin";
+    $("admin-panel").classList.remove("show"); render(); return;
+  }
+  $("login-pw").value=""; $("login-error").classList.remove("show");
+  $("login-overlay").classList.add("show"); setTimeout(()=>$("login-pw").focus(),50);
+}
+async function doLogin(){
+  const pw = $("login-pw").value;
+  let ok=false;
+  try{ ok = (await api({ action:"checkAdmin", pw })).ok; }catch(e){}
+  if(!ok){ $("login-error").classList.add("show"); $("login-pw").value=""; return; }
+  isAdmin=true; adminPw=pw;
+  closeOverlay("login-overlay");
+  $("admin-btn").className="admin-btn active"; $("admin-btn").textContent="🔓 Admin aktiv";
+  $("admin-panel").classList.add("show"); render();
+}
+function askDelete(n){
+  delMonth=n;
+  $("delete-info").innerHTML = `Eintrag von <strong>${esc(data[n].inst)}</strong> für ${MONTHS[n-1]} ${YEAR} löschen? Der Monat wird wieder frei.`;
+  $("delete-overlay").classList.add("show");
+}
+async function confirmDelete(){
+  closeOverlay("delete-overlay");
+  showLoader("Eintrag wird gelöscht…","");
+  try{
+    const r = await api({ action:"delete", year:YEAR, month:delMonth, pw:adminPw });
+    if(!r.ok) alert(r.error || "Löschen fehlgeschlagen.");
+  }catch(e){ alert("Verbindung zum Server fehlgeschlagen."); }
+  hideLoader();
+  loadData();
+}
+
+["book-overlay","success-overlay","login-overlay","delete-overlay"].forEach(id=>{
+  $(id).addEventListener("click", e => { if(e.target === e.currentTarget) closeOverlay(id); });
+});
+
+$("year-label").textContent = YEAR;
+loadData();
+</script>
+</body>
+</html>
