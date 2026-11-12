@@ -76,13 +76,10 @@
     .notice.err{background:var(--danger-soft);color:var(--danger)}
     .notice.admin{background:var(--lav-soft)}
     .notice.admin strong{font-weight:700;margin-right:6px}
+    .notice.round2{background:var(--lav-soft);padding:16px 20px;line-height:1.55}
+    .notice.round2 strong{display:block;font-weight:900;font-size:15px;color:var(--violet)}
     .empty{padding:44px 20px;text-align:center;color:var(--muted);border:1.5px dashed var(--field-line);border-radius:20px}
 
-    .tag{display:inline-block;border-radius:14px;padding:4px 10px;font-size:11.5px;font-weight:700;line-height:1.25;
-      border:1.5px solid var(--violet);color:var(--violet)}
-    .tag.ph{border-color:var(--ink);color:var(--ink)}
-    .tag.sp{background:var(--lav);border-color:var(--lav);color:var(--ink)}
-    .tag.pk{background:var(--ink);border-color:var(--ink);color:var(--white)}
     .cta{display:inline-block;border:0;border-radius:999px;background:var(--ink);color:var(--white);padding:9px 15px;
       font:700 12.5px/1 'Transducer',sans-serif;white-space:nowrap;cursor:pointer;transition:background .15s}
     .cta:hover{background:var(--violet)}
@@ -108,7 +105,21 @@
     .list td.tel{white-space:nowrap}
     .list td.mail{overflow-wrap:break-word}
     .list td.free-note{color:var(--muted);font-size:14px}
-    .list .dash{color:var(--muted)}
+
+    /* Gruppierte Liste (Zusatzplätze): ein <tbody> pro Monat, Platz 1 und 2 durch feine gestrichelte Linie getrennt */
+    .list.grouped tbody tr:last-child td,.list.grouped td.mcell{border-bottom:1px solid var(--line)}
+    .list.grouped tbody tr.s1:not(:last-child) td:not(.mcell){border-bottom:1px dashed var(--line)}
+    .list.grouped tbody:last-child tr:last-child td,.list.grouped tbody:last-child td.mcell{border-bottom:0}
+    .list.grouped td.mcell{vertical-align:top;padding-top:21px}
+    .list td.slot{width:1%;white-space:nowrap}
+    /* gleicher Abstand links in jeder Zeile, auch wenn die Platz-Zelle die erste Zelle der Zeile ist (Platz 2 ohne Monatszelle) */
+    .list.grouped td.slot{padding-left:12px}
+    .slot-pill{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 8px;border-radius:999px;
+      border:1.5px solid var(--field-line);font:700 12px/1 'Transducer',sans-serif;color:var(--muted)}
+    .list tr.s2 .slot-pill{border-color:var(--violet);color:var(--violet)}
+    .slot-word{display:none}
+    .note.share{display:none}
+    .note.share.show{display:block}
 
     .skel{height:16px;border-radius:8px;background:linear-gradient(90deg,#f3f2f8 25%,#e9e7f3 50%,#f3f2f8 75%);background-size:200% 100%;animation:shimmer 1.4s infinite}
     @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
@@ -140,13 +151,6 @@
       font-size:15px;font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s}
     .field input::placeholder{color:#a5a1bf}
     .field input:focus{border-color:var(--violet);box-shadow:0 0 0 3px rgba(67,59,140,.15)}
-    .type-choice{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .type-choice input{position:absolute;opacity:0;pointer-events:none}
-    .type-choice label{display:flex;align-items:center;justify-content:center;text-align:center;padding:12px 10px;border-radius:16px;
-      border:1.5px solid var(--field-line);background:var(--white);color:var(--ink);font-weight:700;font-size:14px;line-height:1.25;cursor:pointer;transition:all .15s}
-    .type-choice label:hover{border-color:var(--violet)}
-    .type-choice input:checked + label{background:var(--ink);border-color:var(--ink);color:var(--white)}
-    .type-choice input:focus-visible + label{outline:2px solid var(--violet);outline-offset:2px}
     .field-error{font-size:13px;color:var(--danger);margin-top:12px;display:none}
     .field-error.show{display:block}
     .modal-actions{display:flex;gap:10px;margin-top:26px}
@@ -196,8 +200,18 @@
       .list .m{font-size:18px}
       .list tr.free td.free-note{display:none}
       .list tr.free td.action{padding-top:10px}
+      /* Gruppierte Liste: Monat = ein Abschnitt, Platz 1 und 2 darin */
+      .list.grouped tbody{display:block;border-bottom:1px solid var(--line);padding:16px 0}
+      .list.grouped tbody:last-child{border-bottom:0}
+      .list.grouped tbody tr{padding:0;border:0}
+      .list.grouped tbody tr.s2{margin-top:14px;padding-top:14px;border-top:1px dashed var(--field-line)}
+      .list.grouped tbody tr.s2:first-child{margin-top:0;padding-top:0;border-top:0}
+      .list.grouped td,.list.grouped td.mcell,.list.grouped tbody tr td,.list.grouped tbody tr:last-child td,
+      .list.grouped tbody tr.s1:not(:last-child) td:not(.mcell){border:0;padding:3px 0}
+      .list.grouped td.slot{width:auto;padding:6px 0 2px}
+      .slot-word{display:inline;margin-right:5px}
+      .slot-pill{height:22px;padding:0 10px;font-size:10px;letter-spacing:1px;text-transform:uppercase}
       .modal{padding:26px 20px}
-      .type-choice label{font-size:13px}
     }
   </style>
 </head>
@@ -232,6 +246,7 @@
 <main class="content wrap">
   <div class="notice err" id="error-banner">⚠️ Verbindung zum Server fehlgeschlagen. Bitte laden Sie die Seite neu.</div>
   <div class="notice admin" id="admin-panel"><strong>Admin-Modus aktiv.</strong>Mit «Löschen» geben Sie einen Monat wieder frei.</div>
+  <div class="notice round2" id="round2-notice"><strong>Alle 12 Monate sind vergeben, herzlichen Dank!</strong>Neu kann jeder Monat ein zweites Mal übernommen werden. Zwei Institutionen teilen sich dann den Monat, die Aufteilung besprechen wir mit Ihnen.</div>
   <div id="months"></div>
 </main>
 
@@ -259,16 +274,10 @@
     <div class="modal-kicker">Social Media Jahresplanung</div>
     <div class="modal-title" id="book-title"></div>
     <div class="modal-hint">Alle Felder sind Pflichtfelder.</div>
+    <div class="note share" id="book-share"></div>
 
     <div class="field"><label for="f-inst">Name der Institution</label>
       <input id="f-inst" type="text" maxlength="120" autocomplete="organization" oninput="chk()"/></div>
-    <div class="field"><label>Art der Organisation</label>
-      <div class="type-choice">
-        <input type="radio" name="f-type" id="t-spitex" value="Spitex" onchange="chk()"/><label for="t-spitex">Spitex</label>
-        <input type="radio" name="f-type" id="t-ph" value="Pflegeheim" onchange="chk()"/><label for="t-ph">Pflegeheim</label>
-        <input type="radio" name="f-type" id="t-sp" value="Spital Thurgau AG" onchange="chk()"/><label for="t-sp">Spital Thurgau AG</label>
-        <input type="radio" name="f-type" id="t-pk" value="Thurgauer Privatkliniken der OPK" onchange="chk()"/><label for="t-pk">Thurgauer Privatkliniken der OPK</label>
-      </div></div>
     <div class="field"><label for="f-name">Vor- und Nachname der Ansprechperson für Social Media</label>
       <input id="f-name" type="text" maxlength="100" autocomplete="name" placeholder="Vorname Nachname" oninput="chk()"/></div>
     <div class="field"><label for="f-tel">Telefonnummer der Ansprechperson</label>
@@ -333,11 +342,11 @@ const API  = "https://script.google.com/macros/s/AKfycbz9lmLwJ5TNdVG8n2-gBG24pI9
 const YEAR = 2027;
 /* ========================= */
 
-/* Art der Organisation → CSS-Klasse des Etiketts (Werte müssen zu TYPES in Code.gs passen) */
-const TYPE_CLASS = { "Spitex":"", "Pflegeheim":"ph", "Spital Thurgau AG":"sp", "Thurgauer Privatkliniken der OPK":"pk" };
 const MONTHS = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
-let data = {}, loaded = false;
-let isAdmin = false, adminPw = "", pMonth = null, delMonth = null;
+let data = {}, data2 = {}, loaded = false;   // data = Platz 1, data2 = Platz 2 (Zusatzplätze)
+let isAdmin = false, adminPw = "", pMonth = null, pSlot = 1, delMonth = null, delSlot = 1;
+// Zusatzplätze öffnen sich erst, wenn alle 12 Monate einen Platz 1 haben
+const round2 = () => MONTHS.every((_, i) => data[i+1]);
 let filter = "all";   // "all" | "free" | "booked"
 
 const $ = id => document.getElementById(id);
@@ -356,21 +365,43 @@ function closeOverlay(id){ $(id).classList.remove("show"); }
 
 /* ── Vorschau mit Testdaten: Seite mit ?mock aufrufen. Kein Serverzugriff, nichts wird gespeichert. ── */
 const MOCK = new URLSearchParams(location.search).has("mock");
-const mockData = {
-  1:{inst:"Pflegeheim Sonnhalde",type:"Pflegeheim",name:"Anna Muster",tel:"+41 79 123 45 67",email:"anna@sonnhalde.ch"},
-  4:{inst:"Spitex Frauenfeld",type:"Spitex",name:"Lea Beispiel",tel:"052 000 00 00",email:"lea@spitex.ch"},
-  6:{inst:"Kantonsspital Frauenfeld",type:"Spital Thurgau AG",name:"Nina Probe",tel:"058 144 00 00",email:"nina@stgag.ch"},
-  9:{inst:"Klinik Seeblick",type:"Thurgauer Privatkliniken der OPK",name:"Tom Versuch",tel:"071 000 00 00",email:"tom@seeblick.ch"}
+/*    ?mock = 4 Monate vergeben · ?mock=voll = alle 12 Monate vergeben, Zusatzplätze offen */
+const MOCK_FULL = new URLSearchParams(location.search).get("mock") === "voll";
+const mockRows = {   // je Monat [Platz 1, Platz 2], wie das Backend nach «Erfasst am» sortiert
+  1:[{inst:"Pflegeheim Sonnhalde",name:"Anna Muster",tel:"+41 79 123 45 67",email:"anna@sonnhalde.ch"}],
+  4:[{inst:"Spitex Frauenfeld",name:"Lea Beispiel",tel:"052 000 00 00",email:"lea@spitex.ch"}],
+  6:[{inst:"Kantonsspital Frauenfeld",name:"Nina Probe",tel:"058 144 00 00",email:"nina@stgag.ch"}],
+  9:[{inst:"Klinik Seeblick",name:"Tom Versuch",tel:"071 000 00 00",email:"tom@seeblick.ch"}]
 };
+if(MOCK_FULL){
+  const fill = [[2,"Spitex Arbon","Mia Test"],[3,"Alterszentrum Weinfelden","Ben Probe"],[5,"Spitex Kreuzlingen","Eva Muster"],
+    [7,"Pflegeheim Seerose","Luca Beispiel"],[8,"Spitex Region Amriswil","Sara Versuch"],[10,"Kantonsspital Münsterlingen","Jan Test"],
+    [11,"Pflegezentrum Steckborn","Lara Probe"],[12,"Spitex Mittelthurgau","Noah Muster"]];
+  fill.forEach(([m,inst,name]) => mockRows[m] = [{inst,name,tel:"071 000 00 0"+(m%10),email:name.split(" ")[0].toLowerCase()+"@beispiel.ch"}]);
+  mockRows[4].push({inst:"Spitex Weinfelden",name:"Ida Zweit",tel:"071 111 11 11",email:"ida@spitex-weinfelden.ch"});
+  mockRows[9].push({inst:"Pflegeheim Bürglen",name:"Max Zweit",tel:"071 222 22 22",email:"max@buerglen.ch"});
+}
 function mockApi(p){
+  const list = m => mockRows[m] || (mockRows[m] = []);
   switch(p.action){
-    case "getAll":     return { ok:true, data:{...mockData} };
+    case "getAll": {
+      const d = {}, d2 = {};
+      for(const m in mockRows){ if(mockRows[m][0]) d[m] = {...mockRows[m][0]}; if(mockRows[m][1]) d2[m] = {...mockRows[m][1]}; }
+      return { ok:true, data:d, data2:d2 };
+    }
     case "checkAdmin": return { ok:true };
-    case "delete":     delete mockData[p.month]; return { ok:true };
-    case "book":
-      if(mockData[p.month]) return { ok:false, taken:true, error:"Dieser Monat ist bereits belegt." };
-      mockData[p.month] = { inst:p.inst, type:p.type, name:p.name, tel:p.tel, email:p.email };
-      return { ok:true, mailSent:true };
+    case "delete":
+      if(!list(p.month)[(p.slot||1)-1]) return { ok:false, error:"Eintrag nicht gefunden." };
+      list(p.month).splice((p.slot||1)-1, 1); return { ok:true };
+    case "book": {
+      const slot = p.slot || 1, n = list(p.month).length;
+      const allFirst = MONTHS.every((_, i) => list(i+1).length);
+      if(slot === 1 && n > 0) return { ok:false, taken:true, error:"Dieser Monat ist bereits belegt." };
+      if(slot === 2 && !allFirst) return { ok:false, taken:true, error:"Zusatzplätze sind erst offen, wenn alle Monate vergeben sind." };
+      if(slot === 2 && n !== 1) return { ok:false, taken:true, error:"Dieser Platz ist bereits belegt." };
+      list(p.month).push({ inst:p.inst, name:p.name, tel:p.tel, email:p.email });
+      return { ok:true, mailSent:true, slot };
+    }
   }
   return { ok:false, error:"Unbekannte Aktion." };
 }
@@ -388,6 +419,7 @@ async function loadData(){
                    : await (await fetch(API + "?action=getAll&year=" + YEAR + "&t=" + Date.now())).json();
     if(!j.ok) throw new Error(j.error);
     data = j.data || {};
+    data2 = j.data2 || {};   // ältere Backend-Version liefert kein data2
     $("error-banner").classList.remove("show");
   }catch(e){
     console.warn(e);
@@ -399,30 +431,53 @@ async function loadData(){
 }
 
 /* ── Darstellung ── */
-const tag    = b => b.type ? `<span class="tag ${TYPE_CLASS[b.type] || ""}">${esc(b.type)}</span>` : `<span class="dash">–</span>`;
-const delBtn = n => `<button class="del-btn" onclick="askDelete(${n})">🗑 Löschen</button>`;
-const table  = rows => `<div class="list"><table>
-  <thead><tr><th>Monat</th><th>Institution</th><th>Organisation</th><th>Ansprechperson Social Media</th><th>Telefon</th><th>E-Mail</th></tr></thead>
-  <tbody>${rows}</tbody></table></div>`;
+const delBtn = (n, s) => `<button class="del-btn" onclick="askDelete(${n},${s})">🗑 Löschen</button>`;
+const HEAD = ["Institution","Ansprechperson Social Media","Telefon","E-Mail"].map(t => `<th>${t}</th>`).join("");
+// Einfache Liste (5 Spalten) oder gruppierte Liste mit Spalte «Platz» und einem <tbody> pro Monat
+const table = (body, grouped) => `<div class="list${grouped ? " grouped" : ""}"><table>
+  <thead><tr><th>Monat</th>${grouped ? "<th>Platz</th>" : ""}${HEAD}</tr></thead>
+  ${grouped ? body : `<tbody>${body}</tbody>`}</table></div>`;
 
-function row({n, m, b}){
-  if(!b) return `<tr class="free">
-      <td><span class="m">${m}</span></td>
-      <td class="action"><button class="cta" onclick="openBook(${n})">Monat übernehmen →</button></td>
-      <td class="free-note" colspan="4">noch frei</td></tr>`;
+// Zellen eines Platzes (ohne Monat): frei mit Button oder vergeben mit Kontaktdaten
+function slotCells(n, s, b, bookable){
+  if(!b) return bookable
+    ? `<td class="action"><button class="cta" onclick="openBook(${n},${s})">${s === 2 ? "Monat mitgestalten →" : "Monat übernehmen →"}</button></td>
+       <td class="free-note" colspan="3">${s === 2 ? "noch 1 Platz frei" : "noch frei"}</td>`
+    : `<td class="free-note" colspan="4">frei</td>`;
   const tel = esc(String(b.tel).replace(/\s/g,""));
-  return `<tr class="booked">
-      <td><span class="m">${m}</span></td>
-      <td class="inst-cell" data-label="Institution"><span class="inst">${esc(b.inst)}</span>${delBtn(n)}</td>
-      <td data-label="Organisation">${tag(b)}</td>
+  return `<td class="inst-cell" data-label="Institution"><span class="inst">${esc(b.inst)}</span>${delBtn(n, s)}</td>
       <td data-label="Ansprechperson Social Media">${esc(b.name)}</td>
       <td class="tel" data-label="Telefon"><a href="tel:${tel}">${esc(b.tel)}</a></td>
-      <td class="mail" data-label="E-Mail"><a href="mailto:${esc(b.email)}">${esc(b.email).replace("@", "<wbr>@")}</a></td></tr>`;
+      <td class="mail" data-label="E-Mail"><a href="mailto:${esc(b.email)}">${esc(b.email).replace("@", "<wbr>@")}</a></td>`;
+}
+const monthCell = (m, span) => `<td class="mcell"${span > 1 ? ` rowspan="${span}"` : ""}><span class="m">${m}</span></td>`;
+const slotPill  = s => `<td class="slot"><span class="slot-pill"><span class="slot-word">Platz</span>${s}</span></td>`;
+const rowClass  = (b, s) => (b ? "booked" : "free") + " s" + s;
+
+// Plätze eines Monats, die beim aktuellen Filter sichtbar sind.
+// Platz 1 ist buchbar, solange die Zusatzplätze zu sind. Platz 2 erscheint in Phase 2 oder wenn er belegt ist.
+// «Noch frei» = nur freie, buchbare Plätze · «Vergeben» = nur belegte Plätze
+function visibleSlots(n, open){
+  const list = [{ s:1, b:data[n], bookable:!open }];
+  if(open || data2[n]) list.push({ s:2, b:data2[n], bookable:open && !!data[n] });
+  return list.filter(x => filter === "all" || (filter === "free" ? (!x.b && x.bookable) : !!x.b));
+}
+
+// Phase 1: eine Zeile pro Monat (wie bisher)
+function row({n, m, slots}){
+  const x = slots[0];
+  return `<tr class="${rowClass(x.b, 1)}">${monthCell(m, 1)}${slotCells(n, 1, x.b, x.bookable)}</tr>`;
+}
+// Phase 2: Monatsgruppe, Monatsname einmal links über alle sichtbaren Plätze
+function group({n, m, slots}){
+  return `<tbody class="grp">${slots.map((x, i) =>
+    `<tr class="${rowClass(x.b, x.s)}">${i === 0 ? monthCell(m, slots.length) : ""}${slotPill(x.s)}${slotCells(n, x.s, x.b, x.bookable)}</tr>`
+  ).join("")}</tbody>`;
 }
 
 function renderSkeleton(){
   $("months").innerHTML = table(MONTHS.map(m =>
-    `<tr><td><span class="m" style="color:#bdb8d6">${m}</span></td><td colspan="5"><div class="skel"></div></td></tr>`).join(""));
+    `<tr><td><span class="m" style="color:#bdb8d6">${m}</span></td><td colspan="4"><div class="skel"></div></td></tr>`).join(""));
 }
 
 function render(){
@@ -430,41 +485,51 @@ function render(){
   $("months").classList.toggle("admin-mode", isAdmin);
   if(!loaded){ renderSkeleton(); return; }
 
-  const booked = MONTHS.filter((_, i) => data[i+1]).length;
-  $("counter").textContent = `${booked} von 12 Monaten vergeben`;
+  const open    = round2();
+  const grouped = open || MONTHS.some((_, i) => data2[i+1]);
+  const booked  = MONTHS.filter((_, i) => data[i+1]).length;
+  const booked2 = MONTHS.filter((_, i) => data2[i+1]).length;
+  $("counter").textContent = `${booked} von 12 Monaten vergeben` + (open ? ` · ${booked2} von 12 Zusatzplätzen` : "");
+  $("round2-notice").classList.toggle("show", open);
 
-  const items = MONTHS.map((m, i) => ({ n:i+1, m, b:data[i+1] }))
-                      .filter(x => filter === "all" || (filter === "free" ? !x.b : !!x.b));
+  const items = MONTHS.map((m, i) => ({ n:i+1, m, slots:visibleSlots(i+1, open) }))
+                      .filter(x => x.slots.length);
   if(!items.length){
-    $("months").innerHTML = `<div class="empty">${filter === "free" ? "Alle Monate sind bereits vergeben." : "Es ist noch kein Monat vergeben."}</div>`;
+    $("months").innerHTML = `<div class="empty">${filter === "free"
+      ? (open ? "Alle Zusatzplätze sind vergeben." : "Alle Monate sind bereits vergeben.")
+      : "Es ist noch kein Monat vergeben."}</div>`;
     return;
   }
-  $("months").innerHTML = table(items.map(row).join(""));
+  $("months").innerHTML = grouped
+    ? table(items.map(group).join(""), true)
+    : table(items.map(row).join(""), false);
 }
 
 /* ── Buchung ── */
-function openBook(n){
-  pMonth = n;
-  $("book-title").textContent = MONTHS[n-1] + " " + YEAR;
+function openBook(n, s){
+  pMonth = n; pSlot = s || 1;
+  $("book-title").textContent = MONTHS[n-1] + " " + YEAR + (pSlot === 2 ? " · 2. Platz" : "");
+  const share = $("book-share");
+  share.classList.toggle("show", pSlot === 2);
+  share.innerHTML = pSlot === 2 && data[n]
+    ? `Sie teilen sich den Monat mit <strong>${esc(data[n].inst)}</strong>. Die Aufteilung besprechen wir mit Ihnen.` : "";
   ["f-inst","f-name","f-tel","f-email"].forEach(id => $(id).value = "");
-  document.querySelectorAll('input[name="f-type"]').forEach(r => r.checked = false);
   $("book-error").classList.remove("show");
   $("btn-book").disabled = true;
   $("book-overlay").classList.add("show");
   setTimeout(()=>$("f-inst").focus(), 50);
 }
 function emailOk(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); }
-function selType(){ const r = document.querySelector('input[name="f-type"]:checked'); return r ? r.value : ""; }
 function chk(){
   const v = id => $(id).value.trim();
-  $("btn-book").disabled = !(v("f-inst") && selType() && v("f-name") && v("f-tel") && emailOk(v("f-email")));
+  $("btn-book").disabled = !(v("f-inst") && v("f-name") && v("f-tel") && emailOk(v("f-email")));
 }
 async function doBook(){
-  const d = { inst:$("f-inst").value.trim(), type:selType(), name:$("f-name").value.trim(), tel:$("f-tel").value.trim(), email:$("f-email").value.trim() };
+  const d = { inst:$("f-inst").value.trim(), name:$("f-name").value.trim(), tel:$("f-tel").value.trim(), email:$("f-email").value.trim() };
   $("btn-book").disabled = true;
   showLoader("Eintrag wird gespeichert…","Bitte Fenster nicht schliessen");
   let res;
-  try{ res = await api({ action:"book", year:YEAR, month:pMonth, ...d }); }
+  try{ res = await api({ action:"book", year:YEAR, month:pMonth, slot:pSlot, ...d }); }
   catch(e){ res = { ok:false, error:"Verbindung zum Server fehlgeschlagen." }; }
   hideLoader();
   if(!res.ok){
@@ -475,7 +540,7 @@ async function doBook(){
     return;
   }
   closeOverlay("book-overlay");
-  $("success-info").innerHTML = `<strong>${esc(d.inst)}</strong> ist eingetragen für <strong>${MONTHS[pMonth-1]} ${YEAR}</strong>.`;
+  $("success-info").innerHTML = `<strong>${esc(d.inst)}</strong> ist eingetragen für <strong>${MONTHS[pMonth-1]} ${YEAR}${pSlot === 2 ? " (2. Platz)" : ""}</strong>.`;
   const note = $("success-note");
   note.className = "note" + (res.mailSent ? "" : " warn");
   note.innerHTML = res.mailSent
@@ -505,16 +570,21 @@ async function doLogin(){
   $("admin-btn").className="admin-btn active"; $("admin-btn").textContent="🔓 Admin aktiv";
   $("admin-panel").classList.add("show"); render();
 }
-function askDelete(n){
-  delMonth=n;
-  $("delete-info").innerHTML = `Eintrag von <strong>${esc(data[n].inst)}</strong> für ${MONTHS[n-1]} ${YEAR} löschen? Der Monat wird wieder frei.`;
+function askDelete(n, s){
+  delMonth=n; delSlot=s||1;
+  const b = delSlot === 2 ? data2[n] : data[n];
+  const label = `${MONTHS[n-1]} ${YEAR}` + (delSlot === 2 ? " (2. Platz)" : "");
+  const after = delSlot === 2 ? "Der 2. Platz wird wieder frei."
+              : data2[n] ? `<strong>${esc(data2[n].inst)}</strong> rückt damit auf Platz 1.`
+              : "Der Monat wird wieder frei.";
+  $("delete-info").innerHTML = `Eintrag von <strong>${esc(b.inst)}</strong> für ${label} löschen? ${after}`;
   $("delete-overlay").classList.add("show");
 }
 async function confirmDelete(){
   closeOverlay("delete-overlay");
   showLoader("Eintrag wird gelöscht…","");
   try{
-    const r = await api({ action:"delete", year:YEAR, month:delMonth, pw:adminPw });
+    const r = await api({ action:"delete", year:YEAR, month:delMonth, slot:delSlot, pw:adminPw });
     if(!r.ok) alert(r.error || "Löschen fehlgeschlagen.");
   }catch(e){ alert("Verbindung zum Server fehlgeschlagen."); }
   hideLoader();
