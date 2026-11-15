@@ -76,8 +76,31 @@
     .notice.err{background:var(--danger-soft);color:var(--danger)}
     .notice.admin{background:var(--lav-soft)}
     .notice.admin strong{font-weight:700;margin-right:6px}
-    .notice.round2{background:var(--lav-soft);padding:16px 20px;line-height:1.55}
-    .notice.round2 strong{display:block;font-weight:900;font-size:15px;color:var(--violet)}
+    /* Ablauf in zwei Schritten: zuerst jeder Monat einmal, danach jeder Monat ein zweites Mal */
+    .steps-label{display:block;font-size:11px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);margin:0 0 12px 4px}
+    .steps{display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch;gap:14px;margin-bottom:30px}
+    .step{border:1.5px solid var(--list-line);border-radius:22px;padding:20px 22px;display:flex;flex-direction:column;gap:8px;background:var(--white)}
+    .step-head{display:flex;align-items:center;gap:10px}
+    .step-num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;
+      background:var(--ink);color:var(--white);font:900 14px/1 'Transducer',sans-serif;flex-shrink:0}
+    .step-title{font-weight:900;font-size:17px;line-height:1.2}
+    .step-badge{margin-left:auto;border-radius:999px;padding:6px 11px;font:700 11px/1 'Transducer',sans-serif;letter-spacing:.3px;white-space:nowrap;
+      background:var(--violet);color:var(--white)}
+    .step-text{font-size:14px;line-height:1.55;color:var(--muted)}
+    .step-bar{height:6px;border-radius:999px;background:var(--lav-soft);overflow:hidden;margin-top:auto}
+    .step-bar span{display:block;height:100%;width:0;border-radius:999px;background:var(--violet);transition:width .4s}
+    .step-status{font-size:13.5px;font-weight:700}
+    .step-arrow{align-self:center;font-weight:900;font-size:22px;color:var(--field-line)}
+    .step.active{border-color:var(--violet);box-shadow:0 0 0 3px rgba(67,59,140,.1)}
+    .step.done{background:var(--lav-soft);border-color:var(--lav-soft)}
+    .step.done .step-num{background:var(--violet)}
+    .step.done .step-badge{background:var(--white);color:var(--violet)}
+    .step.done .step-bar{background:var(--white)}
+    .step.locked{border-style:dashed;border-color:var(--field-line)}
+    .step.locked .step-num{background:var(--white);color:var(--muted);border:1.5px solid var(--field-line)}
+    .step.locked .step-badge{background:transparent;color:var(--muted);border:1.5px solid var(--field-line);padding:5px 10px}
+    .step.locked .step-bar{display:none}
+    .step.locked .step-status{color:var(--muted);margin-top:auto}
     .empty{padding:44px 20px;text-align:center;color:var(--muted);border:1.5px dashed var(--field-line);border-radius:20px}
 
     .cta{display:inline-block;border:0;border-radius:999px;background:var(--ink);color:var(--white);padding:9px 15px;
@@ -130,6 +153,7 @@
     .footer-info{font-size:14px;line-height:1.85;color:rgba(255,255,255,.9)}
     .footer-info strong{font-weight:900;color:var(--lav)}
     .footer-info a{text-decoration:underline;text-underline-offset:3px}
+    .footer-info .nw{white-space:nowrap}
     .social{display:flex;gap:10px;flex-wrap:wrap}
     .social a{display:inline-flex;align-items:center;gap:9px;border:1.5px solid rgba(255,255,255,.55);border-radius:999px;color:var(--white);
       text-decoration:none;padding:9px 16px;font:700 13px/1 'Transducer',sans-serif;transition:all .15s}
@@ -211,6 +235,11 @@
       .list.grouped td.slot{width:auto;padding:6px 0 2px}
       .slot-word{display:inline;margin-right:5px}
       .slot-pill{height:22px;padding:0 10px;font-size:10px;letter-spacing:1px;text-transform:uppercase}
+      .steps{grid-template-columns:1fr;gap:8px}
+      .step-arrow{justify-self:center;transform:rotate(90deg);font-size:18px;line-height:1}
+      .step{padding:18px}
+      .step-head{flex-wrap:wrap}
+      .step-title{order:3;flex-basis:100%;margin-top:4px}
       .modal{padding:26px 20px}
     }
   </style>
@@ -227,7 +256,7 @@
     </div>
     <h1 class="hero-title">Such dir aus, wann du<br>Leben influencen willst.</h1>
     <hr class="hero-rule"/>
-    <p class="hero-intro"><strong>Social Media Jahresplanung <span id="year-label"></span>:</strong> Pro Monat übernimmt eine Institution den Kanal @leben_influencen. Wählen Sie einen freien Monat und geben Sie die Ansprechperson an, die bei Ihnen für Social Media zuständig ist.</p>
+    <p class="hero-intro"><strong>Social Media Jahresplanung <span id="year-label"></span>:</strong> Pro Monat übernimmt eine Institution den Kanal @leben_influencen. Zuerst wird jeder Monat einmal vergeben, danach kann jeder Monat ein zweites Mal gebucht werden. Wählen Sie einen freien Monat und geben Sie die Ansprechperson an, die bei Ihnen für Social Media zuständig ist.</p>
   </div>
 </header>
 
@@ -246,16 +275,31 @@
 <main class="content wrap">
   <div class="notice err" id="error-banner">⚠️ Verbindung zum Server fehlgeschlagen. Bitte laden Sie die Seite neu.</div>
   <div class="notice admin" id="admin-panel"><strong>Admin-Modus aktiv.</strong>Mit «Löschen» geben Sie einen Monat wieder frei.</div>
-  <div class="notice round2" id="round2-notice"><strong>Alle 12 Monate sind vergeben, herzlichen Dank!</strong>Neu kann jeder Monat ein zweites Mal übernommen werden. Zwei Institutionen teilen sich dann den Monat, die Aufteilung besprechen wir mit Ihnen.</div>
+  <span class="steps-label" id="steps-label">So läuft die Vergabe</span>
+  <section class="steps" aria-labelledby="steps-label">
+    <div class="step active" id="step1">
+      <div class="step-head"><span class="step-num">1</span><span class="step-title">Zuerst: jeder Monat einmal</span><span class="step-badge" id="step1-badge">Jetzt offen</span></div>
+      <p class="step-text">Pro Monat eine Institution, bis alle 12 Monate vergeben sind. So ist das ganze Jahr <span class="year"></span> abgedeckt.</p>
+      <div class="step-bar"><span id="step1-bar"></span></div>
+      <div class="step-status" id="step1-status">Wird geladen …</div>
+    </div>
+    <div class="step-arrow" aria-hidden="true">→</div>
+    <div class="step locked" id="step2">
+      <div class="step-head"><span class="step-num">2</span><span class="step-title">Danach: jeder Monat ein zweites Mal</span><span class="step-badge" id="step2-badge">Noch geschlossen</span></div>
+      <p class="step-text">Sind alle 12 Monate vergeben, öffnet sich pro Monat ein zweiter Platz. Zwei Institutionen teilen sich dann den Monat, die Aufteilung besprechen wir mit Ihnen.</p>
+      <div class="step-bar"><span id="step2-bar"></span></div>
+      <div class="step-status" id="step2-status">🔒 Öffnet sich automatisch, sobald alle 12 Monate vergeben sind.</div>
+    </div>
+  </section>
   <div id="months"></div>
 </main>
 
 <footer class="footer">
   <div class="wrap">
     <div class="footer-info">
-      <strong>Curaviva Thurgau</strong><br>
-      <a href="mailto:pex@curaviva-tg.ch">pex@curaviva-tg.ch</a> · Tel. 071 622 05 27<br>
-      <a href="https://leben-influencen.ch" target="_blank" rel="noopener">leben-influencen.ch</a>
+      <strong>Pflege Thurgau</strong><br>
+      <a href="https://leben-influencen.ch" target="_blank" rel="noopener">leben-influencen.ch</a><br>
+      Melden Sie sich bei Fragen: <a class="nw" href="mailto:pex@curaviva-tg.ch">pex@curaviva-tg.ch</a> · <span class="nw">Tel. 071 622 05 27</span>
     </div>
     <div class="social">
       <a href="https://www.instagram.com/leben_influencen/" target="_blank" rel="noopener" aria-label="Instagram @leben_influencen">
@@ -480,6 +524,27 @@ function renderSkeleton(){
     `<tr><td><span class="m" style="color:#bdb8d6">${m}</span></td><td colspan="4"><div class="skel"></div></td></tr>`).join(""));
 }
 
+// Ablauf-Anzeige: Schritt 1 (jeder Monat einmal) und Schritt 2 (Zusatzplätze)
+function renderSteps(open, booked, booked2){
+  const set = (k, state, badge, pct, status) => {
+    $(k).className = "step " + state;
+    $(k + "-badge").textContent = badge;
+    $(k + "-bar").style.width = pct + "%";
+    $(k + "-status").textContent = status;
+  };
+  const free = 12 - booked, free2 = 12 - booked2;
+  if(!open){
+    set("step1", "active", "Jetzt offen", booked / 12 * 100,
+      `${booked} von 12 Monaten vergeben · noch ${free} ${free === 1 ? "Monat" : "Monate"} frei`);
+    set("step2", "locked", "Noch geschlossen", 0,
+      "🔒 Öffnet sich automatisch, sobald alle 12 Monate vergeben sind.");
+  } else {
+    set("step1", "done", "Abgeschlossen ✓", 100, "Alle 12 Monate sind vergeben, herzlichen Dank!");
+    set("step2", free2 ? "active" : "done", free2 ? "Jetzt offen" : "Abgeschlossen ✓", booked2 / 12 * 100,
+      free2 ? `${booked2} von 12 Zusatzplätzen vergeben · noch ${free2} frei` : "Alle Zusatzplätze sind vergeben, herzlichen Dank!");
+  }
+}
+
 function render(){
   document.querySelectorAll("[data-filter]").forEach(b => b.setAttribute("aria-pressed", b.dataset.filter === filter));
   $("months").classList.toggle("admin-mode", isAdmin);
@@ -490,7 +555,7 @@ function render(){
   const booked  = MONTHS.filter((_, i) => data[i+1]).length;
   const booked2 = MONTHS.filter((_, i) => data2[i+1]).length;
   $("counter").textContent = `${booked} von 12 Monaten vergeben` + (open ? ` · ${booked2} von 12 Zusatzplätzen` : "");
-  $("round2-notice").classList.toggle("show", open);
+  renderSteps(open, booked, booked2);
 
   const items = MONTHS.map((m, i) => ({ n:i+1, m, slots:visibleSlots(i+1, open) }))
                       .filter(x => x.slots.length);
@@ -596,6 +661,7 @@ async function confirmDelete(){
 });
 
 $("year-label").textContent = YEAR;
+document.querySelectorAll(".year").forEach(e => e.textContent = YEAR);
 if(MOCK) $("mock-banner").classList.add("show");
 render();
 loadData();
